@@ -1,2 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment
 .env
-.env.example
+.env.*
+
+# Database
+local.db
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
