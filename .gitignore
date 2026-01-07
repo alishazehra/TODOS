@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # dependencies
 /node_modules
 /.pnp
@@ -34,3 +35,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+=======
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment
+.env
+.env.*
+
+# Database
+local.db
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+>>>>>>> e14b754d18ba9615acd74a97a2b243969feba108
