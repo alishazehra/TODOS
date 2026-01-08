@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 
 from core.config import settings
 from .db.connection import engine
-from .api import auth, todos
+from api import auth, todos
 
 
 @asynccontextmanager
