@@ -11,7 +11,7 @@ import type {
   ErrorResponse,
 } from "@/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://todos-12-ykud.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://todos-1-yq2e.onrender.com";
 
 class ApiClient {
   private client: AxiosInstance;
