@@ -1,8 +1,9 @@
-"use client";
+
+ 
+ "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
@@ -13,7 +14,6 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,23 +30,37 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
+
     try {
-      await signup(email, password, confirmPassword);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || "Signup failed");
+      }
+
+      alert("Signup successful! You can now log in.");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <Card className="w-full max-w-md ">
+    <Card className="w-full max-w-md mx-auto mt-10">
       <CardHeader>
-        <CardTitle >Create an account</CardTitle>
-        <CardDescription>
-          Enter your details to create your todo account
-        </CardDescription>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>Enter your details to create your todo account</CardDescription>
       </CardHeader>
+
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
@@ -61,7 +75,6 @@ export default function SignupPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            autoComplete="email"
           />
           <Input
             label="Password"
@@ -70,7 +83,6 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoComplete="new-password"
           />
           <Input
             label="Confirm Password"
@@ -79,14 +91,14 @@ export default function SignupPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            autoComplete="new-password"
           />
         </CardContent>
+
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full bg-blue-500" isLoading={isLoading}>
             Create Account
           </Button>
-          <p className="text-sm text-center text-muted-foreground ">
+          <p className="text-sm text-center text-muted-foreground">
             Already have an account?{" "}
             <Link href="/signin" className="text-primary hover:underline">
               Sign in
