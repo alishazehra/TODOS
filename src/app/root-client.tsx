@@ -1,8 +1,8 @@
-"use client";
+// "use client";
 
-import { AuthProvider } from "@/lib/auth";
-import { ReactNode } from "react";
+// import { AuthProvider } from "@/lib/auth";
+// import { ReactNode } from "react";
 
-export function RootClient({ children }: { children: ReactNode }) {
-  return <AuthProvider>{children}</AuthProvider>;
-}
+// export function RootClient({ children }: { children: ReactNode }) {
+//   return <AuthProvider>{children}</AuthProvider>;
+// }
