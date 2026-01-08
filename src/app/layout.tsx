@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { RootClient } from "./root-client";
- import "./globals.css";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Evolution of Todo",
@@ -15,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <RootClient>{children}</RootClient>
+        {children}
       </body>
     </html>
   );
