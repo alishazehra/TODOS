@@ -10,12 +10,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, label, error, id, ...props }, ref) => {
-    const id = React.useId(); // always at top
-const isConditionMet = someCondition;
+    const inputId = id || React.useId(); // use existing id or generate one
 
-return (
-  <input id={isConditionMet ? id : undefined} ... />
-);
+    // Example of conditional usage without calling hook conditionally
+    const isConditionMet = true; // replace with your actual condition
 
     return (
       <div className="w-full">
@@ -26,7 +24,7 @@ return (
         )}
         <input
           type={type}
-          id={inputId}
+          id={isConditionMet ? inputId : undefined}
           className={cn(
             "form-input",
             error && "border-red-500 focus:ring-red-500",
