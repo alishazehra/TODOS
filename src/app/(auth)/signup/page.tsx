@@ -1,6 +1,6 @@
 
  
- "use client";
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -30,23 +30,19 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
-
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.detail || "Signup failed");
       }
 
-      alert("Signup successful! You can now log in.");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
+      alert("Signup successful! You can now login.");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -55,12 +51,11 @@ export default function SignupPage() {
   };
 
   return (
-    <Card className="w-full max-w-md mx-auto mt-10">
+    <Card className="w-full max-w-md">
       <CardHeader>
         <CardTitle>Create an account</CardTitle>
         <CardDescription>Enter your details to create your todo account</CardDescription>
       </CardHeader>
-
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           {error && (
@@ -93,7 +88,6 @@ export default function SignupPage() {
             required
           />
         </CardContent>
-
         <CardFooter className="flex flex-col gap-4">
           <Button type="submit" className="w-full bg-blue-500" isLoading={isLoading}>
             Create Account
@@ -109,3 +103,4 @@ export default function SignupPage() {
     </Card>
   );
 }
+
