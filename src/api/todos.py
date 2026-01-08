@@ -3,7 +3,8 @@ from fastapi.responses import JSONResponse
 from sqlmodel import Session
 from typing import List
 
-from ..db.connection import get_db
+from src.db.connection import get_db
+
 from ..schemas.todo import TodoCreate, TodoUpdate, TodoResponse, TodoListResponse
 from ..services.todo_service import TodoService
 from .deps import get_current_user
