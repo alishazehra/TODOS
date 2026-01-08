@@ -1,76 +1,72 @@
 
-  "use client";
+ // src/lib/auth.ts
+"use client";
 
-import { useState } from "react";
+import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+
+const AuthContext = createContext<any>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const auth = useProvideAuth();
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+}
 
 export const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+function useProvideAuth() {
   const [user, setUser] = useState<any>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const isAuthenticated = !!user;
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-  // Signup function
   const signup = async (email: string, password: string, confirmPassword: string) => {
-    setError(null);
-
-    if (password !== confirmPassword) {
-      throw new Error("Passwords do not match");
-    }
-
-    if (password.length < 8) {
-      throw new Error("Password must be at least 8 characters");
-    }
-
+    setIsLoading(true);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/auth/signup`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.detail || "Signup failed");
       }
 
-      const data = await response.json();
-      setUser(data.user || null);
+      const data = await res.json();
+      setUser(data.user || { email });
       return data;
-    } catch (err: any) {
-      setError(err.message || "Signup failed");
-      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Signin function
   const signin = async (email: string, password: string) => {
-    setError(null);
-
+    setIsLoading(true);
     try {
-      const response = await fetch(`${apiUrl}/api/v1/auth/signin`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
+      if (!res.ok) {
+        const data = await res.json();
         throw new Error(data.detail || "Signin failed");
       }
 
-      const data = await response.json();
-      setUser(data.user || null);
+      const data = await res.json();
+      setUser(data.user || { email });
       return data;
-    } catch (err: any) {
-      setError(err.message || "Signin failed");
-      throw err;
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  return {
-    user,
-    error,
-    signup,
-    signin,
+  const signout = () => {
+    setUser(null);
   };
-};
+
+  return { user, isAuthenticated, isLoading, signup, signin, signout };
+}
