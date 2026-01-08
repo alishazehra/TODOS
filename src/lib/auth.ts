@@ -6,6 +6,8 @@ export function useAuth() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const isAuthenticated = !!user;
+
   const signup = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
@@ -15,12 +17,10 @@ export function useAuth() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.detail || "Signup failed");
       }
-
       return await res.json();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
@@ -39,12 +39,10 @@ export function useAuth() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.detail || "Signin failed");
       }
-
       const data = await res.json();
       setUser(data.user);
       return data;
@@ -58,5 +56,5 @@ export function useAuth() {
 
   const signout = () => setUser(null);
 
-  return { user, error, isLoading, signup, signin, signout };
+  return { user, isAuthenticated, error, isLoading, signup, signin, signout };
 }
