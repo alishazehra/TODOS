@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from sqlmodel import SQLModel
 
-from .core.config import settings
+from core.config import settings
 from .db.connection import engine
 from .api import auth, todos
 
