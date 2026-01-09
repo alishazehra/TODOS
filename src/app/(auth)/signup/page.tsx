@@ -31,21 +31,24 @@ export default function SignupPage() {
     setIsLoading(true);
     try {
       const res = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email, password }),
+});
 
-      const data = await res.json();
+const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.detail || "Signup failed");
-      }
+// Always use data.detail as the error message
+if (!res.ok) {
+  setError(data.detail || "Signup failed");
+  return;
+}
 
-      alert("Signup successful! You can now login.");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
+alert("Signup successful! You can now login.");
+setEmail("");
+setPassword("");
+setConfirmPassword("");
+
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
