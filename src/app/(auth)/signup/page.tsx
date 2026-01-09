@@ -1,6 +1,5 @@
 
- 
-"use client";
+ "use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -31,8 +30,8 @@ export default function SignupPage() {
 
     setIsLoading(true);
     try {
+      // ✅ Correct fetch to Vercel proxy
       const res = await fetch("/api/signup", {
-, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -44,6 +43,8 @@ export default function SignupPage() {
       }
 
       alert("Signup successful! You can now login.");
+      // Optional: redirect to login page
+      // window.location.href = "/signin";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
@@ -104,4 +105,5 @@ export default function SignupPage() {
     </Card>
   );
 }
+
 
