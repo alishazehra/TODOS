@@ -12,17 +12,25 @@ export async function POST(req: Request) {
       }
     );
 
-    const data = await response.json().catch(() => ({}));
+    let data: any;
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
 
     if (!response.ok) {
-      // always return a detail string
-      return new Response(
-        JSON.stringify({ detail: data.detail || data.message || "Signup failed" }),
-        {
-          status: response.status,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+      // Make sure detail is always a string
+      const errorMessage =
+        typeof data.detail === "string"
+          ? data.detail
+          : typeof data.message === "string"
+          ? data.message
+          : "Signup failed";
+      return new Response(JSON.stringify({ detail: errorMessage }), {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     return new Response(JSON.stringify(data), {
@@ -30,9 +38,9 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ detail: "Internal server error" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ detail: "Internal server error" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
