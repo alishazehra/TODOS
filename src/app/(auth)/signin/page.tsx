@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -12,6 +13,7 @@ export default function SigninPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const { signin } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -26,6 +28,7 @@ export default function SigninPage() {
     setIsLoading(true);
     try {
       await signin(email, password);
+      router.push("/todos");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Sign in failed");
     } finally {
@@ -34,8 +37,6 @@ export default function SigninPage() {
   };
 
   return (
-    
-
     <Card className="w-full max-w-md ">
       <CardHeader>
         <CardTitle>Welcome back</CardTitle>
@@ -75,7 +76,6 @@ export default function SigninPage() {
           </Button>
           <p className="text-sm text-center text-muted-foreground">
             Don&apos;t have an account?{" "}
-            
             <Link href="/signup" className="text-primary underline underline-offset-4 decoration-solid">
               Create one
             </Link>

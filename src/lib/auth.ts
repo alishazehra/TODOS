@@ -1,27 +1,55 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export function useAuth() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const initialized = useRef(false);
+
+  // Initialize user from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && !initialized.current) {
+      initialized.current = true;
+      const userInfo = localStorage.getItem("user_info");
+      if (userInfo) {
+        try {
+          setUser(JSON.parse(userInfo));
+        } catch (e) {
+          console.error("Failed to parse user info", e);
+        }
+      }
+      setIsLoading(false);
+    }
+  }, []);
 
   const isAuthenticated = !!user;
 
-  const signup = async (email: string, password: string) => {
+  const signup = async (email: string, password: string, confirm_password: string) => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signup`, {
+      const res = await fetch(`https://todos-1-yq2e.onrender.com/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, confirm_password }),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail || "Signup failed");
+        let errorMsg = "Signup failed";
+        if (data?.detail?.error?.message) {
+          errorMsg = data.detail.error.message;
+        } else if (typeof data?.detail === "string") {
+          errorMsg = data.detail;
+        } else if (typeof data?.detail === "object") {
+          errorMsg = JSON.stringify(data.detail);
+        }
+        throw new Error(errorMsg);
       }
-      return await res.json();
+      setUser(data.user);
+      localStorage.setItem("user_info", JSON.stringify(data.user));
+      localStorage.setItem("session_token", data.session.token);
+      return data;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
       throw err;
@@ -34,27 +62,43 @@ export function useAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/signin`, {
+      const res = await fetch(`https://todos-1-yq2e.onrender.com/api/v1/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.detail || "Signin failed");
-      }
       const data = await res.json();
+      if (!res.ok) {
+        let errorMsg = "Signin failed";
+        if (data?.detail?.error?.message) {
+          errorMsg = data.detail.error.message;
+        } else if (data?.error?.message) {
+          errorMsg = data.error.message;
+        } else if (typeof data?.detail === "string") {
+          errorMsg = data.detail;
+        } else if (typeof data?.detail === "object") {
+          errorMsg = JSON.stringify(data.detail);
+        }
+        throw new Error(errorMsg);
+      }
       setUser(data.user);
+      localStorage.setItem("user_info", JSON.stringify(data.user));
+      localStorage.setItem("session_token", data.session.token);
       return data;
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Signin failed");
-      throw err;
+      const msg = err instanceof Error ? err.message : "Signin failed";
+      setError(msg);
+      throw new Error(msg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signout = () => setUser(null);
+  const signout = () => {
+    setUser(null);
+    localStorage.removeItem("session_token");
+    localStorage.removeItem("user_info");
+  };
 
   return { user, isAuthenticated, error, isLoading, signup, signin, signout };
 }

@@ -1,8 +1,9 @@
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
@@ -13,6 +14,8 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const { signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,33 +33,10 @@ export default function SignupPage() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/signup", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email, password }),
-});
-
-const data = await res.json();
-
-// Always use data.detail as the error message
-if (!res.ok) {
-  setError(data.detail || "Signup failed");
-  return;
-}
-
-alert("Signup successful! You can now login.");
-setEmail("");
-setPassword("");
-setConfirmPassword("");
-
+      await signup(email, password, confirmPassword);
+      router.push("/todos");
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else if (typeof err === "object" && err !== null) {
-        setError(JSON.stringify(err));
-      } else {
-        setError("Signup failed");
-      }
+      setError(err instanceof Error ? err.message : "Signup failed");
     } finally {
       setIsLoading(false);
     }

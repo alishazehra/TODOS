@@ -13,7 +13,7 @@ from src.models import *
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     SQLModel.metadata.create_all(engine, checkfirst=True)
-    print("✅ Database tables created")
+    print("[OK] Database tables created")
     yield
 
 app = FastAPI(
