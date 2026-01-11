@@ -29,7 +29,8 @@ export function useAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`https://todos-1-yq2e.onrender.com/api/v1/auth/signup`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todos-1-yq2e.onrender.com';
+      const res = await fetch(`${apiUrl}/api/v1/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, confirm_password }),
@@ -62,7 +63,8 @@ export function useAuth() {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch(`https://todos-1-yq2e.onrender.com/api/v1/auth/signin`, {
+      const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://todos-1-yq2e.onrender.com';
+      const res = await fetch(`${apiUrl}/api/v1/auth/signin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
